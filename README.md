@@ -45,8 +45,8 @@
 - [x] **Entity 구현**
   - [x] `User` 클래스 생성 및 테이블 매핑
   - [x] `BaseTimeEntity` 적용 (생성일, 수정일 자동화)
-- [ ] **Repository 구현**
-  - [ ] `UserRepository` 인터페이스 생성 (`JpaRepository` 상속)
+- [x] **Repository 구현**
+  - [x] `UserRepository` 인터페이스 생성 (`JpaRepository` 상속)
 - [ ] **API 구현 (Controller/Service)**
   - [ ] 회원가입 API (POST /api/users)
   - [ ] 회원 조회 API (GET /api/users/{id})
@@ -55,8 +55,8 @@
 - [x] **Entity 구현**
   - [x] `Category` 클래스 생성
   - [x] `BaseTimeEntity` 적용 (생성일, 수정일 자동화)
-- [ ] **Repository 구현**
-  - [ ] `CategoryRepository` 인터페이스 생성
+- [x] **Repository 구현**
+  - [x] `CategoryRepository` 인터페이스 생성
 - [ ] **API 구현**
   - [ ] 카테고리 목록 조회 API (GET /api/categories)
 
@@ -65,8 +65,8 @@
   - [x] `Post` 클래스 생성
   - [x] `BaseTimeEntity` 적용 (생성일, 수정일 자동화)
   - [x] 연관관계 매핑: `User`(N:1), `Category`(N:1)
-- [ ] **Repository 구현**
-  - [ ] `PostRepository` 인터페이스 생성
+- [x] **Repository 구현**
+  - [x] `PostRepository` 인터페이스 생성
 - [ ] **API 구현**
   - [ ] 게시글 작성 API (POST /api/posts)
   - [ ] 게시글 단건 조회 API (GET /api/posts/{id})
@@ -79,8 +79,8 @@
   - [x] `Comment` 클래스 생성
   - [x] `BaseTimeEntity` 적용 (생성일, 수정일 자동화)
   - [x] 연관관계 매핑: `Post`(N:1), `User`(N:1)
-- [ ] **Repository 구현**
-  - [ ] `CommentRepository` 인터페이스 생성
+- [x] **Repository 구현**
+  - [x] `CommentRepository` 인터페이스 생성
 - [ ] **API 구현**
   - [ ] 댓글 작성 API (POST /api/posts/{postId}/comments)
   - [ ] 특정 게시글의 댓글 목록 조회 API (GET /api/posts/{postId}/comments)
@@ -92,8 +92,8 @@
   - [x] 연관관계 매핑: `Post`(N:1), `User`(N:1)
   - [x] `UniqueConstraint` 적용 (user_id와 post_id의 조합은 유일해야 한다.)
   - [x] `BaseTimeEntity` 적용 (생성일, 수정일 자동화)
-- [ ] **Repository 구현**
-  - [ ] `PostFavoriteRepository`, `PostScrapRepository` 생성
+- [x] **Repository 구현**
+  - [x] `PostFavoriteRepository`, `PostScrapRepository` 생성
 - [ ] **API 구현**
   - [ ] 좋아요 등록/취소 토글 API (POST /api/posts/{postId}/Favorite)
   - [ ] 스크랩 등록/취소 토글 API (POST /api/posts/{postId}/scrap)
@@ -104,8 +104,8 @@
   - [x] 연관관계 매핑: `Post`(N:1), `User`(N:1)
   - [x] `UniqueConstraint` 적용
   - [x] `BaseTimeEntity` 적용 (생성일, 수정일 자동화)
-- [ ] **Repository 구현**
-  - [ ] `PostLikeRepository`, `PostLikeRepository` 생성
+- [x] **Repository 구현**
+  - [x] `PostLikeRepository`, `PostLikeRepository` 생성
 - [ ] **API 구현**
   - [ ] 좋아요 등록/취소 토글 API (POST /api/posts/{postId}/Favorite)
   - [ ] 스크랩 등록/취소 토글 API (POST /api/posts/{postId}/scrap)
@@ -116,8 +116,8 @@
   - [x] 연관관계 매핑: `Category`(N:1), `User`(N:1)
   - [x] `UniqueConstraint` 적용
   - [x] `BaseTimeEntity` 적용 (생성일, 수정일 자동화)
-- [ ] **Repository 구현**
-  - [ ] `CategoryFavoriteRepository` 생성
+- [x] **Repository 구현**
+  - [x] `CategoryFavoriteRepository` 생성
 - [ ] **API 구현**
   - [ ] 좋아요 등록/취소 토글 API (POST /api/posts/{postId}/Favorite)
   - [ ] 스크랩 등록/취소 토글 API (POST /api/posts/{postId}/scrap)
@@ -128,8 +128,8 @@
   - [x] 연관관계 매핑
   - [x] `UniqueConstraint` 적용
   - [x] `BaseTimeEntity` 적용 (생성일, 수정일 자동화)
-- [ ] **Repository 구현**
-  - [ ] `FollowRepository` 생성
+- [x] **Repository 구현**
+  - [x] `FollowRepository` 생성
 
 #### Test
 - [ ] **인프라 연동 테스트**
