@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS post_scraps CASCADE;
+DROP TABLE IF EXISTS post_favorites CASCADE;
 DROP TABLE IF EXISTS post_likes CASCADE;
 DROP TABLE IF EXISTS comments CASCADE;
 DROP TABLE IF EXISTS posts CASCADE;
@@ -55,7 +55,7 @@ CREATE TABLE post_likes (
                             CONSTRAINT uk_likes_user_post UNIQUE (user_id, post_id)
 );
 
-CREATE TABLE post_scraps (
+CREATE TABLE post_favorites (
                              id          BIGSERIAL       PRIMARY KEY,
                              user_id     BIGINT          NOT NULL,
                              post_id     BIGINT          NOT NULL,
@@ -83,4 +83,4 @@ VALUES (2, 2, '스프링 부트 너무 재밌네요', 'JPA 공부중인데 신�
 INSERT INTO comments (post_id, user_id, content) VALUES (2, 1, '화이팅입니다!'); -- 관리자가 유저1 글에 댓글
 
 INSERT INTO post_likes (user_id, post_id) VALUES (1, 2); -- 관리자가 유저1 글에 좋아요
-INSERT INTO post_scraps (user_id, post_id) VALUES (1, 2); -- 관리자가 유저1 글 스크랩
+INSERT INTO post_favorites (user_id, post_id) VALUES (1, 2); -- 관리자가 유저1 글 스크랩

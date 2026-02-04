@@ -63,8 +63,8 @@
 #### Post
 - [x] **Entity 구현**
   - [x] `Post` 클래스 생성
-  - [x] 연관관계 매핑: `User`(N:1), `Category`(N:1)
   - [x] `BaseTimeEntity` 적용 (생성일, 수정일 자동화)
+  - [x] 연관관계 매핑: `User`(N:1), `Category`(N:1)
 - [ ] **Repository 구현**
   - [ ] `PostRepository` 인터페이스 생성
 - [ ] **API 구현**
@@ -75,9 +75,10 @@
   - [ ] 게시글 삭제 API (DELETE /api/posts/{id})
 
 #### Comment
-- [ ] **Entity 구현**
-  - [ ] `Comment` 클래스 생성
-  - [ ] 연관관계 매핑: `Post`(N:1), `User`(N:1)
+- [x] **Entity 구현**
+  - [x] `Comment` 클래스 생성
+  - [x] `BaseTimeEntity` 적용 (생성일, 수정일 자동화)
+  - [x] 연관관계 매핑: `Post`(N:1), `User`(N:1)
 - [ ] **Repository 구현**
   - [ ] `CommentRepository` 인터페이스 생성
 - [ ] **API 구현**
@@ -86,9 +87,11 @@
   - [ ] 댓글 삭제 API (DELETE /api/comments/{commentId})
 
 #### Post Favorite
-- [ ] **Entity 구현**
-  - [ ] `PostFavorite` 클래스 생성
-  - [ ] `BaseTimeEntity` 적용 (생성일, 수정일 자동화)
+- [x] **Entity 구현**
+  - [x] `PostFavorite` 클래스 생성
+  - [x] 연관관계 매핑: `Post`(N:1), `User`(N:1)
+  - [x] `UniqueConstraint` 적용 (user_id와 post_id의 조합은 유일해야 한다.)
+  - [x] `BaseTimeEntity` 적용 (생성일, 수정일 자동화)
 - [ ] **Repository 구현**
   - [ ] `PostFavoriteRepository`, `PostScrapRepository` 생성
 - [ ] **API 구현**
@@ -96,9 +99,11 @@
   - [ ] 스크랩 등록/취소 토글 API (POST /api/posts/{postId}/scrap)
 
 #### Post Like
-- [ ] **Entity 구현**
-  - [ ] `PostLike` 클래스 생성
-  - [ ] `BaseTimeEntity` 적용 (생성일, 수정일 자동화)
+- [x] **Entity 구현**
+  - [x] `PostLike` 클래스 생성
+  - [x] 연관관계 매핑: `Post`(N:1), `User`(N:1)
+  - [x] `UniqueConstraint` 적용
+  - [x] `BaseTimeEntity` 적용 (생성일, 수정일 자동화)
 - [ ] **Repository 구현**
   - [ ] `PostLikeRepository`, `PostLikeRepository` 생성
 - [ ] **API 구현**
@@ -106,9 +111,11 @@
   - [ ] 스크랩 등록/취소 토글 API (POST /api/posts/{postId}/scrap)
 
 #### Category Favorite
-- [ ] **Entity 구현**
-  - [ ] `CategoryFavorite` 클래스 생성
-  - [ ] `BaseTimeEntity` 적용 (생성일, 수정일 자동화)
+- [x] **Entity 구현**
+  - [x] `CategoryFavorite` 클래스 생성
+  - [x] 연관관계 매핑: `Category`(N:1), `User`(N:1)
+  - [x] `UniqueConstraint` 적용
+  - [x] `BaseTimeEntity` 적용 (생성일, 수정일 자동화)
 - [ ] **Repository 구현**
   - [ ] `CategoryFavoriteRepository` 생성
 - [ ] **API 구현**
