@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS follows CASCADE;
 DROP TABLE IF EXISTS post_favorites CASCADE;
 DROP TABLE IF EXISTS post_likes CASCADE;
 DROP TABLE IF EXISTS comments CASCADE;
@@ -66,10 +67,26 @@ CREATE TABLE post_favorites (
                              CONSTRAINT uk_scraps_user_post UNIQUE (user_id, post_id)
 );
 
+CREATE TABLE follows (
+                         id           BIGSERIAL       PRIMARY KEY,
+                         follower_id  BIGINT          NOT NULL, -- 팔로우 하는 사람 (나)
+                         following_id BIGINT          NOT NULL, -- 팔로우 받는 사람 (너)
+                         created_at   TIMESTAMP       DEFAULT NOW(),
+                         updated_at   TIMESTAMP,
+
+    -- 1. 나(follower)가 탈퇴하면 팔로우 기록 삭제
+                         CONSTRAINT fk_follows_follower FOREIGN KEY (follower_id) REFERENCES users (id) ON DELETE CASCADE,
+    -- 2. 너(following)가 탈퇴해도 팔로우 기록 삭제
+                         CONSTRAINT fk_follows_following FOREIGN KEY (following_id) REFERENCES users (id) ON DELETE CASCAE,
+    -- 3. 중복 팔로우 방지 (나는 너를 한 번만 팔로우 가능)
+                         CONSTRAINT uk_follow_follower_following UNIQUE (follower_id, following_id)
+);
+
+-- dummy data
+INSERT INTO follows (follower_id, following_id) VALUES (1, 2);
 INSERT INTO categories (name, description) VALUES ('공지사항', '필독 사항입니다.');
 INSERT INTO categories (name, description) VALUES ('자유게시판', '자유롭게 글을 남겨주세요.');
 INSERT INTO categories (name, description) VALUES ('질문게시판', '궁금한 점을 물어보세요.');
-
 INSERT INTO users (email, password, username, role) VALUES ('admin@example.com', '1234', '관리자', 'ADMIN');
 INSERT INTO users (email, password, username, role) VALUES ('user1@example.com', '1234', '스프링고수', 'USER');
 

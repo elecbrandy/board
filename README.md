@@ -122,6 +122,15 @@
   - [ ] 좋아요 등록/취소 토글 API (POST /api/posts/{postId}/Favorite)
   - [ ] 스크랩 등록/취소 토글 API (POST /api/posts/{postId}/scrap)
 
+#### Follow
+- [x] **Entity 구현**
+  - [x] `Follow` 클래스 생성
+  - [x] 연관관계 매핑
+  - [x] `UniqueConstraint` 적용
+  - [x] `BaseTimeEntity` 적용 (생성일, 수정일 자동화)
+- [ ] **Repository 구현**
+  - [ ] `FollowRepository` 생성
+
 #### Test
 - [ ] **인프라 연동 테스트**
   - [ ] `make up` 실행 시 DB 컨테이너 정상 구동 확인
