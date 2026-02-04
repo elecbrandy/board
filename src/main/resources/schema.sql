@@ -9,7 +9,7 @@ CREATE TABLE users (
                        id          BIGSERIAL       PRIMARY KEY,
                        email       VARCHAR(100)    NOT NULL UNIQUE,
                        password    VARCHAR(255)    NOT NULL,
-                       nickname    VARCHAR(50)     NOT NULL UNIQUE,
+                       username    VARCHAR(50)     NOT NULL UNIQUE,
                        role        VARCHAR(20)     NOT NULL DEFAULT 'USER',
                        created_at  TIMESTAMP       DEFAULT NOW()
 );
@@ -70,8 +70,8 @@ INSERT INTO categories (name, description) VALUES ('공지사항', '필독 사�
 INSERT INTO categories (name, description) VALUES ('자유게시판', '자유롭게 글을 남겨주세요.');
 INSERT INTO categories (name, description) VALUES ('질문게시판', '궁금한 점을 물어보세요.');
 
-INSERT INTO users (email, password, nickname, role) VALUES ('admin@example.com', '1234', '관리자', 'ADMIN');
-INSERT INTO users (email, password, nickname, role) VALUES ('user1@example.com', '1234', '스프링고수', 'USER');
+INSERT INTO users (email, password, username, role) VALUES ('admin@example.com', '1234', '관리자', 'ADMIN');
+INSERT INTO users (email, password, username, role) VALUES ('user1@example.com', '1234', '스프링고수', 'USER');
 
 
 INSERT INTO posts (category_id, user_id, title, content)

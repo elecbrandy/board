@@ -1,5 +1,19 @@
 # Board
 
+## 개발 순서
+
+- API 설계
+  - 엔드포인트 설정
+  - Request/Response JSON 구조 정하기
+- Backend 개발
+  - DB ERD 기반 Entity 작성
+  - Repository 작성
+  - DTO 작성
+  - Service 작성
+  - Controller 작성
+- 기능 개발 흐름
+  - 회원가입/로그인 → 카테고리 목록 조회 → 게시글 작성 및 목록 조회 → 좋아요/스크랩/팔로우 등
+
 ## 요구사항 명세
 
 ### Setting
@@ -19,7 +33,7 @@
   - [x] `categories` 테이블 생성 (id, name, description)
   - [x] `posts` 테이블 생성 (id, category_id, user_id, title, content, view_count, dates)
   - [x] `comments` 테이블 생성 (id, post_id, user_id, content, created_at)
-  - [x] `post_likes` 테이블 생성 (user_id, post_id, unique constraint)
+  - [x] `post_Favorites` 테이블 생성 (user_id, post_id, unique constraint)
   - [x] `post_scraps` 테이블 생성 (user_id, post_id, unique constraint)
 - [x] 초기 데이터 구성 (`schema.sql` 하단)
   - [x] 기본 카테고리 데이터 삽입 (예: 자유게시판, 질문게시판)
@@ -28,9 +42,9 @@
 ### Spring boot
 
 #### User
-- [ ] **Entity 구현**
-  - [ ] `User` 클래스 생성 및 테이블 매핑
-  - [ ] 식별자 생성 전략 설정 (`GenerationType.IDENTITY`)
+- [x] **Entity 구현**
+  - [x] `User` 클래스 생성 및 테이블 매핑
+  - [x] `BaseTimeEntity` 적용 (생성일, 수정일 자동화)
 - [ ] **Repository 구현**
   - [ ] `UserRepository` 인터페이스 생성 (`JpaRepository` 상속)
 - [ ] **API 구현 (Controller/Service)**
@@ -38,18 +52,19 @@
   - [ ] 회원 조회 API (GET /api/users/{id})
 
 #### Category
-- [ ] **Entity 구현**
-  - [ ] `Category` 클래스 생성
+- [x] **Entity 구현**
+  - [x] `Category` 클래스 생성
+  - [x] `BaseTimeEntity` 적용 (생성일, 수정일 자동화)
 - [ ] **Repository 구현**
   - [ ] `CategoryRepository` 인터페이스 생성
 - [ ] **API 구현**
   - [ ] 카테고리 목록 조회 API (GET /api/categories)
 
 #### Post
-- [ ] **Entity 구현**
-  - [ ] `Post` 클래스 생성
-  - [ ] 연관관계 매핑: `User`(N:1), `Category`(N:1)
-  - [ ] `BaseTimeEntity` 적용 (생성일, 수정일 자동화)
+- [x] **Entity 구현**
+  - [x] `Post` 클래스 생성
+  - [x] 연관관계 매핑: `User`(N:1), `Category`(N:1)
+  - [x] `BaseTimeEntity` 적용 (생성일, 수정일 자동화)
 - [ ] **Repository 구현**
   - [ ] `PostRepository` 인터페이스 생성
 - [ ] **API 구현**
@@ -70,14 +85,34 @@
   - [ ] 특정 게시글의 댓글 목록 조회 API (GET /api/posts/{postId}/comments)
   - [ ] 댓글 삭제 API (DELETE /api/comments/{commentId})
 
-#### Like/Scrap
+#### Post Favorite
 - [ ] **Entity 구현**
-  - [ ] `PostLike` 클래스 생성 (복합 유니크 제약조건 적용)
-  - [ ] `PostScrap` 클래스 생성
+  - [ ] `PostFavorite` 클래스 생성
+  - [ ] `BaseTimeEntity` 적용 (생성일, 수정일 자동화)
 - [ ] **Repository 구현**
-  - [ ] `PostLikeRepository`, `PostScrapRepository` 생성
+  - [ ] `PostFavoriteRepository`, `PostScrapRepository` 생성
 - [ ] **API 구현**
-  - [ ] 좋아요 등록/취소 토글 API (POST /api/posts/{postId}/like)
+  - [ ] 좋아요 등록/취소 토글 API (POST /api/posts/{postId}/Favorite)
+  - [ ] 스크랩 등록/취소 토글 API (POST /api/posts/{postId}/scrap)
+
+#### Post Like
+- [ ] **Entity 구현**
+  - [ ] `PostLike` 클래스 생성
+  - [ ] `BaseTimeEntity` 적용 (생성일, 수정일 자동화)
+- [ ] **Repository 구현**
+  - [ ] `PostLikeRepository`, `PostLikeRepository` 생성
+- [ ] **API 구현**
+  - [ ] 좋아요 등록/취소 토글 API (POST /api/posts/{postId}/Favorite)
+  - [ ] 스크랩 등록/취소 토글 API (POST /api/posts/{postId}/scrap)
+
+#### Category Favorite
+- [ ] **Entity 구현**
+  - [ ] `CategoryFavorite` 클래스 생성
+  - [ ] `BaseTimeEntity` 적용 (생성일, 수정일 자동화)
+- [ ] **Repository 구현**
+  - [ ] `CategoryFavoriteRepository` 생성
+- [ ] **API 구현**
+  - [ ] 좋아요 등록/취소 토글 API (POST /api/posts/{postId}/Favorite)
   - [ ] 스크랩 등록/취소 토글 API (POST /api/posts/{postId}/scrap)
 
 #### Test
