@@ -9,12 +9,16 @@ DROP TABLE IF EXISTS category_favorites CASCADE;
 
 CREATE TABLE users (
     id          BIGSERIAL       PRIMARY KEY,
-    email       VARCHAR(100)    NOT NULL UNIQUE,
+    email       VARCHAR(100)    NOT NULL,
     password    VARCHAR(255)    NOT NULL,
-    username    VARCHAR(50)     NOT NULL UNIQUE,
+    username    VARCHAR(50)     NOT NULL,
     role        VARCHAR(20)     NOT NULL DEFAULT 'USER',
     created_at   TIMESTAMP      DEFAULT NOW(),
-    updated_at   TIMESTAMP
+    updated_at   TIMESTAMP,
+
+    CONSTRAINT pk_users PRIMARY KEY (id),
+    CONSTRAINT uk_users_email UNIQUE (email),
+    CONSTRAINT chk_users_role CHECK ( role IN ('USER', 'ADMIN'))
 );
 
 CREATE TABLE categories (

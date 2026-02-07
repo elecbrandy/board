@@ -1,4 +1,4 @@
-package com.elecbrandy.board.domain.dto;
+package com.elecbrandy.board.global.response;
 
 import com.elecbrandy.board.domain.enums.ResponseStatus;
 import lombok.AllArgsConstructor;
