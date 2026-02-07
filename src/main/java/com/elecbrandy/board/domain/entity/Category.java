@@ -21,4 +21,9 @@ public class Category extends BaseTimeEntity {
 //    @Column(nullable = false, unique = false, length = 255)
     private String description;
 
+    @Builder
+    public Category(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
 }
