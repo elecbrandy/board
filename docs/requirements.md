@@ -7,7 +7,7 @@
 - [x] application.yml 설정 (DB 연결, JPA 설정)
 - [x] 공통 응답 DTO 구조 생성 (`ApiResponse<T>`)
 
-## 🗄️ 데이터베이스 & 엔티티
+## 데이터베이스 & 엔티티
 
 ### 엔티티 클래스 생성
 - [x] User 엔티티
@@ -28,27 +28,23 @@
 - [x] PostLikeRepository
 - [x] PostFavoriteRepository
 - [x] FollowRepository
-
-
-
-## 👥 Users API
+- 
+## Users API
 
 ### Controller
-- [ ] UserController 생성
+- [x] UserController 생성
 
 ### Endpoints
-- [ ] `POST /api/users` - 사용자 등록
+- [x] `POST /api/users` - 사용자 등록
 - [ ] `GET /api/users` - 사용자 목록 조회 (페이지네이션)
 - [ ] `GET /api/users/{id}` - 사용자 상세 조회
 - [ ] `PUT /api/users/{id}` - 사용자 정보 수정
 - [ ] `DELETE /api/users/{id}` - 사용자 삭제
 
 ### Service & DTO
-- [ ] UserService 생성
+- [x] UserService 생성
 - [ ] UserRequestDto 생성
 - [ ] UserResponseDto 생성
-
-
 
 ## 📁 Categories API
 

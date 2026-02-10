@@ -1,5 +1,7 @@
 package com.elecbrandy.board.controller;
 
+import com.elecbrandy.board.domain.dto.LoginRequest;
+import com.elecbrandy.board.domain.dto.TokenInfo;
 import com.elecbrandy.board.global.response.ApiResponse;
 import com.elecbrandy.board.domain.dto.RegisterRequest;
 import com.elecbrandy.board.domain.dto.RegisterResponse;
@@ -17,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final UserService userService;
-//    private final AuthSrevice authSrevice;
+//    private final AuthSrevice authService;
 
     // Signup: UserService 호출 (DB에 저장)
     @PostMapping("/register")
@@ -29,11 +31,9 @@ public class AuthController {
         return ApiResponse.success("회원가입 성공", userResponse);
     }
 
-    // Login: AuthService 호출 (비번 검사 + 토큰 발급)
-//    @PostMapping("/login")
-//    public ApiResponse<UserJoinResponse> login(@Valid @RequestBody LoginRequest request) {}
-
-    // Refresh: AuthService 호출 (refresh token 검증)
-//    @PostMapping("/login")
-//    public ApiResponse<UserJoinResponse> login(@Valid @RequestBody RefreshRequest request) {}
+    @PostMapping("/login")
+    public ApiResponse<TokenInfo> login(@Valid @RequestBody LoginRequest request) {
+        TokenInfo tokenInfo = userService.login(request);
+        return ApiResponse.success("로그인 성공", tokenInfo);
+    }
 }

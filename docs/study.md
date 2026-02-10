@@ -204,3 +204,260 @@ private void validateDuplicateUser(UserJoinRequest request) {
 ```
 
 이렇게 하면 성능 걱정 없이 안전하게 중복 체크를 하실 수 있습니다.
+
+
+## JWT 토큰 도입
+
+로그인까지 완료했으니까 JWT 토큰 도입하자.
+
+네, **지금이 딱 JWT(JSON Web Token)를 도입해야 할 타이밍입니다.**
+
+현재 올려주신 코드 상태를 분석해보면, JWT 도입이 필요한 이유는 다음과 같습니다.
+
+1. **REST API 구조:** `BoardApplication`은 View(JSP/Thymeleaf)가 아닌 JSON을 반환하는 REST API 서버 형태입니다. 이 경우 세션/쿠키 방식보다는 **Stateless(무상태)** 한 토큰 인증 방식이 표준입니다.
+2. **구현 단계:** 회원가입(`register`)은 구현되었고, `AuthController`에 `login`과 `refresh` 부분이 주석으로 남겨져 있습니다. 이제 "로그인 -> 토큰 발급 -> 토큰으로 게시글 작성"의 흐름을 만들 차례입니다.
+3. **Spring Security 설정:** 현재 `SecurityConfig`가 `.permitAll()`로 모든 문을 열어두고 있습니다. 이를 닫고 인증된 사용자만 `Post`나 `Comment`를 작성("POST", "PUT", "DELETE")할 수 있게 막아야 합니다.
+
+다음은 현재 프로젝트 구조(`com.elecbrandy.board`)에 맞춰 JWT를 도입하는 단계별 가이드입니다.
+
+---
+
+### 1. `build.gradle` 의존성 추가
+
+JWT 생성을 위한 라이브러리(`jjwt`)를 추가합니다.
+
+```groovy
+dependencies {
+    // ... 기존 의존성 ...
+    
+    // JWT
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+}
+
+```
+
+### 2. `application.yaml` 설정 추가
+
+JWT 서명에 사용할 비밀키(Secret Key)를 설정합니다. (실제 운영 시에는 환경변수로 관리해야 합니다.)
+
+```yaml
+jwt:
+  secret: c2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQtc2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQK # 임의의 긴 문자열 (Base64 인코딩 권장)
+
+```
+
+### 3. `JwtTokenProvider` 생성
+
+`global/jwt` 패키지를 새로 만들고, 토큰 생성 및 검증 로직을 담당할 클래스를 만듭니다.
+
+**파일 경로:** `src/main/java/com/elecbrandy/board/global/jwt/JwtTokenProvider.java`
+
+```java
+package com.elecbrandy.board.global.jwt;
+
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
+
+import java.security.Key;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.stream.Collectors;
+
+@Slf4j
+@Component
+public class JwtTokenProvider {
+
+    private final Key key;
+
+    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        this.key = Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    // 유저 정보를 가지고 AccessToken, RefreshToken 을 생성하는 메서드
+    public TokenInfo generateToken(Authentication authentication) {
+        // 권한 가져오기
+        String authorities = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+
+        long now = (new Date()).getTime();
+
+        // Access Token 생성 (30분 유효)
+        Date accessTokenExpiresIn = new Date(now + 1800000); 
+        String accessToken = Jwts.builder()
+                .setSubject(authentication.getName())
+                .claim("auth", authorities)
+                .setExpiration(accessTokenExpiresIn)
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+
+        // Refresh Token 생성 (옵션)
+        String refreshToken = Jwts.builder()
+                .setExpiration(new Date(now + 86400000))
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+
+        return TokenInfo.builder()
+                .grantType("Bearer")
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
+    }
+
+    // JWT 토큰을 복호화하여 토큰에 들어있는 정보를 꺼내는 메서드
+    public Authentication getAuthentication(String accessToken) {
+        // 토큰 복호화
+        Claims claims = parseClaims(accessToken);
+
+        if (claims.get("auth") == null) {
+            throw new RuntimeException("권한 정보가 없는 토큰입니다.");
+        }
+
+        // 클레임에서 권한 정보 가져오기
+        Collection<? extends GrantedAuthority> authorities =
+                Arrays.stream(claims.get("auth").toString().split(","))
+                        .map(SimpleGrantedAuthority::new)
+                        .collect(Collectors.toList());
+
+        // UserDetails 객체를 만들어서 Authentication 리턴
+        UserDetails principal = new User(claims.getSubject(), "", authorities);
+        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+    }
+
+    // 토큰 정보를 검증하는 메서드
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            return true;
+        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
+            log.info("Invalid JWT Token", e);
+        } catch (ExpiredJwtException e) {
+            log.info("Expired JWT Token", e);
+        } catch (UnsupportedJwtException e) {
+            log.info("Unsupported JWT Token", e);
+        } catch (IllegalArgumentException e) {
+            log.info("JWT claims string is empty.", e);
+        }
+        return false;
+    }
+
+    private Claims parseClaims(String accessToken) {
+        try {
+            return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
+        } catch (ExpiredJwtException e) {
+            return e.getClaims();
+        }
+    }
+}
+
+```
+
+*(참고: `TokenInfo` DTO는 별도로 `dto` 패키지에 만들어주셔야 합니다.)*
+
+### 4. `JwtAuthenticationFilter` 생성
+
+요청이 들어올 때 헤더에서 토큰을 꺼내 검증하고, 유효하면 SecurityContext에 저장하는 필터입니다.
+
+**파일 경로:** `src/main/java/com/elecbrandy/board/global/jwt/JwtAuthenticationFilter.java`
+
+```java
+package com.elecbrandy.board.global.jwt;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.StringUtils;
+import org.springframework.web.filter.GenericFilterBean;
+
+import java.io.IOException;
+
+@RequiredArgsConstructor
+public class JwtAuthenticationFilter extends GenericFilterBean {
+
+    private final JwtTokenProvider jwtTokenProvider;
+
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        // 1. Request Header 에서 JWT 토큰 추출
+        String token = resolveToken((HttpServletRequest) request);
+
+        // 2. validateToken 으로 토큰 유효성 검사
+        if (token != null && jwtTokenProvider.validateToken(token)) {
+            // 토큰이 유효할 경우 토큰에서 Authentication 객체를 가지고 와서 SecurityContext 에 저장
+            Authentication authentication = jwtTokenProvider.getAuthentication(token);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        }
+        chain.doFilter(request, response);
+    }
+
+    // Request Header 에서 토큰 정보 추출
+    private String resolveToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer")) {
+            return bearerToken.substring(7);
+        }
+        return null;
+    }
+}
+
+```
+
+### 5. `SecurityConfig` 수정 (핵심)
+
+이제 필터를 등록하고, 세션을 끄고(Stateless), API 권한을 설정합니다.
+
+```java
+// src/main/java/com/elecbrandy/board/global/config/SecurityConfig.java
+
+@Configuration
+@EnableWebSecurity // 추가
+@RequiredArgsConstructor // 추가
+public class SecurityConfig {
+
+    private final JwtTokenProvider jwtTokenProvider;
+
+    // ... passwordEncoder 빈은 그대로 유지 ...
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+            .csrf(csrf -> csrf.disable())
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 미사용
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/auth/**").permitAll() // 로그인, 회원가입은 누구나
+                .requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll() // 게시글 조회는 누구나
+                .anyRequest().authenticated() // 그 외(글쓰기 등)는 인증 필요
+            )
+            // JWT 필터를 UsernamePasswordAuthenticationFilter 전에 추가
+            .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+            
+        return http.build();
+    }
+}
+
+```
+
+### 결론 및 다음 단계
+
+이제 **로그인 서비스 로직**(`UserService.login`)을 구현하여 이메일/비밀번호 검증 후 `JwtTokenProvider.generateToken()`을 호출해 토큰을 반환하도록 만들면 됩니다.
+
+
