@@ -24,3 +24,6 @@ spring:
 
 jwt:
   secret: c2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQtc2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQK
+  access-token-expiration: 1800000      # 30분 (밀리초)
+  refresh-token-expiration: 86400000    # 1일 (밀리초)
+  cookie-secure: false                  # 로컬에선 false, 운영(HTTPS)에선 true로 설정

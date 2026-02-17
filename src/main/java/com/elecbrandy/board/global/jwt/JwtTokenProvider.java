@@ -4,6 +4,7 @@ import com.elecbrandy.board.domain.dto.TokenInfo;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,12 +26,25 @@ import java.util.stream.Collectors;
 public class JwtTokenProvider {
     private final Key key;
 
-    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
+    @Getter
+    private final long accessTokenExpiration;
+
+    @Getter
+    private final long refreshTokenExpiration;
+
+
+
+
+    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey,
+                            @Value("${jwt.access-token-expiration}") long accessTokenExpiration,
+                            @Value("${jwt.refresh-token-expiration}") long refreshTokenExpiration) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
+        this.accessTokenExpiration = accessTokenExpiration;
+        this.refreshTokenExpiration = refreshTokenExpiration;
     }
 
-    // 유저 정보를 가지 AccessToken, RefreshToken을 생성
+    // 유저 정보를 가지고 AccessToken, RefreshToken을 생성
     public TokenInfo generateToken(Authentication authentication) {
         // 권한 가져오기
         String authorities = authentication.getAuthorities().stream()
@@ -39,9 +53,8 @@ public class JwtTokenProvider {
 
         long now = (new Date()).getTime();
 
-        // AccessToken 생성 (30분)
-        // Access Token 생성 (30분)
-        Date accessTokenExpiresIn = new Date(now + 1800000);
+        // AccessToken 생성
+        Date accessTokenExpiresIn = new Date(now + accessTokenExpiration);
         String accessToken = Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim("auth", authorities)
@@ -51,7 +64,7 @@ public class JwtTokenProvider {
 
         // Refresh Token 생성 (1일)
         String refreshToken = Jwts.builder()
-                .setExpiration(new Date(now + 86400000))
+                .setExpiration(new Date(now + refreshTokenExpiration))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 

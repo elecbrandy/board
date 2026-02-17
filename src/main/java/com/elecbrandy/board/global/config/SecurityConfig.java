@@ -1,5 +1,6 @@
 package com.elecbrandy.board.global.config;
 
+import com.elecbrandy.board.global.jwt.JwtAuthenticationEntryPoint;
 import com.elecbrandy.board.global.jwt.JwtAuthenticationFilter;
 import com.elecbrandy.board.global.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     // AuthenticationManager를 Bean으로 등록
     @Bean
@@ -31,6 +33,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(exception -> exception.authenticationEntryPoint((jwtAuthenticationEntryPoint)))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll()

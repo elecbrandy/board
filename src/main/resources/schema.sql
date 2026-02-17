@@ -101,3 +101,8 @@ CREATE TABLE follows (
     CONSTRAINT fk_follows_following FOREIGN KEY (following_id) REFERENCES users (id) ON DELETE CASCADE,
     CONSTRAINT uk_follow_follower_following UNIQUE (follower_id, following_id)
 );
+
+CREATE TABLE refresh_token (
+    key VARCHAR(255) PRIMARY KEY,
+    value VARCHAR(500) NOT NULL
+);
