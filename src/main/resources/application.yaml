@@ -3,10 +3,24 @@ server:
 
 spring:
   datasource:
-    url: jdbc:h2:mem:testdb
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+    url: ${DB_URL:jdbc:postgresql://localhost:${DB_PORT:5432}/${POSTGRES_DB:boilerplate}}
+    username: ${POSTGRES_USER:myuser}
+    password: ${POSTGRES_PASSWORD:strongpassword123!}
+  mvc:
+    throw-exception-if-no-handler-found: true
+  web:
+    resources:
+      add-mappings: false
+
+  sql:
+    init:
+      mode: never
+
+  springdoc:
+    swagger-ui:
+      path: /swagger-ui.html
+    api-docs:
+      path: /v3/api-docs
 
   jpa:
     hibernate:
@@ -15,15 +29,16 @@ spring:
     properties:
       hibernate:
         format_sql: true
-      defer-datasource-initialization: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    defer-datasource-initialization: true # 데이터 소스 초기화 지연 (JPA 설정 후 실행)
 
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
-
+# JWT & Security 설정 (환경변수 주입)
 jwt:
-  secret: c2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQtc2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQK
-  access-token-expiration: 1800000      # 30분 (밀리초)
-  refresh-token-expiration: 86400000    # 1일 (밀리초)
-  cookie-secure: false                  # 로컬에선 false, 운영(HTTPS)에선 true로 설정
+  secret: ${JWT_SECRET}
+  access-token-expiration: ${JWT_ACCESS_EXP:1800000}
+  refresh-token-expiration: ${JWT_REFRESH_EXP:86400000}
+  cookie-secure: false # 운영 시 ture
+
+app:
+  cors:
+    allowed-origins: ${APP_CORS_ORIGINS:http://localhost:3000,http://localhost:8080}

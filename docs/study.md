@@ -218,7 +218,7 @@ private void validateDuplicateUser(UserJoinRequest request) {
 2. **구현 단계:** 회원가입(`register`)은 구현되었고, `AuthController`에 `login`과 `refresh` 부분이 주석으로 남겨져 있습니다. 이제 "로그인 -> 토큰 발급 -> 토큰으로 게시글 작성"의 흐름을 만들 차례입니다.
 3. **Spring Security 설정:** 현재 `SecurityConfig`가 `.permitAll()`로 모든 문을 열어두고 있습니다. 이를 닫고 인증된 사용자만 `Post`나 `Comment`를 작성("POST", "PUT", "DELETE")할 수 있게 막아야 합니다.
 
-다음은 현재 프로젝트 구조(`com.elecbrandy.board`)에 맞춰 JWT를 도입하는 단계별 가이드입니다.
+다음은 현재 프로젝트 구조(`com.elecbrandy.boilerplate`)에 맞춰 JWT를 도입하는 단계별 가이드입니다.
 
 ---
 
@@ -255,7 +255,7 @@ jwt:
 **파일 경로:** `src/main/java/com/elecbrandy/board/global/jwt/JwtTokenProvider.java`
 
 ```java
-package com.elecbrandy.board.global.jwt;
+package com.elecbrandy.boilerplate.global.jwt;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -297,7 +297,7 @@ public class JwtTokenProvider {
         long now = (new Date()).getTime();
 
         // Access Token 생성 (30분 유효)
-        Date accessTokenExpiresIn = new Date(now + 1800000); 
+        Date accessTokenExpiresIn = new Date(now + 1800000);
         String accessToken = Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim("auth", authorities)
@@ -375,7 +375,7 @@ public class JwtTokenProvider {
 **파일 경로:** `src/main/java/com/elecbrandy/board/global/jwt/JwtAuthenticationFilter.java`
 
 ```java
-package com.elecbrandy.board.global.jwt;
+package com.elecbrandy.boilerplate.global.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -396,7 +396,8 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
         // 1. Request Header 에서 JWT 토큰 추출
         String token = resolveToken((HttpServletRequest) request);
 

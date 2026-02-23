@@ -38,3 +38,13 @@ out/
 .autocp
 *.sh
 *.txt
+
+### Custom ###
+
+# .gitignore
+.env
+db_data/
+.gradle/
+build/
+out/
+!gradle/wrapper/gradle-wrapper.jar
