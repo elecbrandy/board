@@ -34,14 +34,9 @@ public final class AppConstants {
     // 4. 시스템 설정 (System)
     // ========================================================================
     public static final String ZONE_ID_SEOUL = "Asia/Seoul";
-
-    // 필요하다면 날짜 포맷도 여기서 관리
     public static final String DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
-
-
     public static final String COOKIE_PATH_ROOT = "/";
     public static final String COOKIE_SAME_SITE_LAX = "Lax";
-
     public static final String TOKEN_TYPE_KEY = "type";
     public static final String ACCESS_TOKEN_TYPE = "ACCESS";
     public static final String REFRESH_TOKEN_TYPE = "REFRESH";

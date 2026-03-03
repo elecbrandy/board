@@ -79,7 +79,7 @@ public class JwtTokenProvider {
     public Authentication getAuthentication(String accessToken) {
         Claims claims = parseClaims(accessToken);
 
-        // [수정 3] 토큰 타입 검증 (Access Token이 맞는지 확인)
+        // 토큰 타입 검증 (Access Token이 맞는지 확인)
         String tokenType = (String) claims.get(AppConstants.TOKEN_TYPE_KEY);
         if (!AppConstants.ACCESS_TOKEN_TYPE.equals(tokenType)) {
             // Refresh Token으로 접근 시도를 막음

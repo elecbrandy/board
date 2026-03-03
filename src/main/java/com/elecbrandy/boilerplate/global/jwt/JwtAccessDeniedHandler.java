@@ -1,6 +1,6 @@
 package com.elecbrandy.boilerplate.global.jwt;
 
-import com.elecbrandy.boilerplate.global.response.ApiResponse;
+import com.elecbrandy.boilerplate.global.response.CommonResponse;
 import com.elecbrandy.boilerplate.global.response.ErrorCode;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,7 +25,7 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.setContentType("application/json;charset=UTF-8");
 
-        ApiResponse<Void> errorResponse = ApiResponse.fail(ErrorCode.ACCESS_DENIED);
+        CommonResponse<Void> errorResponse = CommonResponse.fail(ErrorCode.ACCESS_DENIED);
 
         response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
     }

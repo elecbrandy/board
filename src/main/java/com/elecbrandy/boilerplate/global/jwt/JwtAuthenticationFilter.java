@@ -21,12 +21,33 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Arrays;
 
+
+/**
+ * JWT 인증을 처리하는 커스텀 보안 필터 클래스입니다.
+ * <p>
+ * Spring Security의 {@link OncePerRequestFilter}를 상속받아 HTTP 요청당 한 번씩 실행됩니다.
+ * 들어오는 HTTP 요청의 헤더 또는 쿠키에서 JWT(Access Token)를 추출하고 유효성을 검증합니다.
+ * 토큰이 유효한 경우 {@link SecurityContextHolder}에 인증(Authentication) 객체를 저장하여 이후의 보안 로직을 통과시킵니다.
+ * <p>
+ * 토큰 검증 과정에서 예외가 발생하면, 해당 오류에 맞는 {@link ErrorCode}를 {@code request}의 속성(attribute)으로 저장하여
+ * {@link JwtAuthenticationEntryPoint}에서 클라이언트에게 적절한 에러 응답을 내보낼 수 있도록 합니다.
+ * * @author elecbrandy
+ */
 @Slf4j
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
 
+    /**
+     * HTTP 요청을 인터셉트하여 JWT 인증 로직을 수행합니다.
+     *
+     * @param request  현재 HTTP 요청 객체
+     * @param response 현재 HTTP 응답 객체
+     * @param chain    다음 필터로 제어를 넘기기 위한 필터 체인
+     * @throws ServletException 서블릿 예외 발생 시
+     * @throws IOException      입출력 처리 중 예외 발생 시
+     */
     @Override
     public void doFilterInternal(@NonNull HttpServletRequest request,
                                  @NonNull HttpServletResponse response,
@@ -36,8 +57,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             if (token != null) {
-                // [수정] validateToken()이 이제 void이며 실패 시 예외를 던짐
-                jwtTokenProvider.validateToken(token);
+                jwtTokenProvider.validateToken(token); // 실패 시 예외를 던짐
 
                 // 검증 통과 시 Authentication 설정
                 Authentication authentication = jwtTokenProvider.getAuthentication(token);
@@ -59,9 +79,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             request.setAttribute("exception", ErrorCode.INTERNAL_SERVER_ERROR);
         }
 
-        chain.doFilter(request, response);
+        chain.doFilter(request, response); // 다음 필터로 이동
     }
 
+    /**
+     * HTTP 요청에서 JWT 토큰 문자열을 추출합니다.
+     * <p>
+     * 1. HTTP 헤더({@code Authorization})에서 {@code Bearer } 접두사로 시작하는 토큰 추출<br>
+     * 2. 헤더에 토큰이 없을 경우, HTTP 쿠키에서 {@code accessToken}이라는 이름의 쿠키 값 추출
+     * </p>
+     *
+     * @param request 현재 HTTP 요청 객체
+     * @return 추출된 JWT 문자열 (존재하지 않을 경우 {@code null} 반환)
+     */
     private String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(AppConstants.AUTHORIZATION_HEADER);
         if (bearerToken != null && bearerToken.startsWith(AppConstants.BEARER_PREFIX)) {

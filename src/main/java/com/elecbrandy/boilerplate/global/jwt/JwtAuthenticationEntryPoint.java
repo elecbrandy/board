@@ -1,6 +1,6 @@
 package com.elecbrandy.boilerplate.global.jwt;
 
-import com.elecbrandy.boilerplate.global.response.ApiResponse;
+import com.elecbrandy.boilerplate.global.response.CommonResponse;
 import com.elecbrandy.boilerplate.global.response.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -37,7 +37,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
         log.warn("Authentication Failed: {} - {}", errorCode.getCode(), errorCode.getMessage());
 
-        ApiResponse<Void> errorResponse = ApiResponse.fail(errorCode);
+        CommonResponse<Void> errorResponse = CommonResponse.fail(errorCode);
 
         // 4. JSON 쓰기
         response.getWriter().write(objectMapper.writeValueAsString(errorResponse));

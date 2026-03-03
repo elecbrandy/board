@@ -8,7 +8,6 @@ Spring-boot 기반 프로젝트 시 초기 설정을 빠르게 하기 위한 목
 - `user-register-jwt`
   - _httpOnly cookie + jwt_ 토큰을 통한 Register, Login 기능
 
-
 ## How to use
 
 | 명령어            | 하는 일        | 비고 |

@@ -9,7 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ApiResponse<T> {
+public class CommonResponse<T> {
     @Schema(description = "응답 상태", example = "success", allowableValues = {"success", "fail", "error"})
     private String status;
 
@@ -22,8 +22,9 @@ public class ApiResponse<T> {
     @Schema(description = "응답 데이터")
     private T data;
 
-    public static <T> ApiResponse<T> success(T data) {
-        return new ApiResponse<>(
+    @Schema(description = "실제 데이터 객체")
+    public static <T> CommonResponse<T> success(T data) {
+        return new CommonResponse<>(
                 ResponseStatus.SUCCESS.getValue(),
                 ErrorCode.SUCCESS.getMessage(),
                 ErrorCode.SUCCESS.getCode(),
@@ -31,12 +32,12 @@ public class ApiResponse<T> {
         );
     }
 
-    public static <T> ApiResponse<T> success() {
+    public static <T> CommonResponse<T> success() {
         return success(null);
     }
 
-    public static <T> ApiResponse<T> success(String message, T data) {
-        return new ApiResponse<>(
+    public static <T> CommonResponse<T> success(String message, T data) {
+        return new CommonResponse<>(
                 ResponseStatus.SUCCESS.getValue(),
                 message,
                 ErrorCode.SUCCESS.getCode(),
@@ -44,8 +45,8 @@ public class ApiResponse<T> {
         );
     }
 
-    public static <T> ApiResponse<T> ok(String message) {
-        return new ApiResponse<>(
+    public static <T> CommonResponse<T> ok(String message) {
+        return new CommonResponse<>(
                 ResponseStatus.SUCCESS.getValue(),
                 message,
                 ErrorCode.SUCCESS.getCode(),
@@ -53,8 +54,8 @@ public class ApiResponse<T> {
         );
     }
 
-    public static <T> ApiResponse<T> fail(ErrorCode errorCode, T data) {
-        return new ApiResponse<>(
+    public static <T> CommonResponse<T> fail(ErrorCode errorCode, T data) {
+        return new CommonResponse<>(
                 ResponseStatus.FAIL.getValue(),
                 errorCode.getMessage(),
                 errorCode.getCode(),
@@ -62,12 +63,12 @@ public class ApiResponse<T> {
         );
     }
 
-    public static <T> ApiResponse<T> fail(ErrorCode errorCode) {
+    public static <T> CommonResponse<T> fail(ErrorCode errorCode) {
         return fail(errorCode, null);
     }
 
-    public static <T> ApiResponse<T> fail(String message, String code) {
-        return new ApiResponse<>(
+    public static <T> CommonResponse<T> fail(String message, String code) {
+        return new CommonResponse<>(
                 ResponseStatus.FAIL.getValue(),
                 message,
                 code,
@@ -75,8 +76,8 @@ public class ApiResponse<T> {
         );
     }
 
-    public static <T> ApiResponse<T> error(ErrorCode errorCode) {
-        return new ApiResponse<>(
+    public static <T> CommonResponse<T> error(ErrorCode errorCode) {
+        return new CommonResponse<>(
                 ResponseStatus.ERROR.getValue(),
                 errorCode.getMessage(),
                 errorCode.getCode(),
