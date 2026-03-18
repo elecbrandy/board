@@ -1,5 +1,6 @@
 package com.elecbrandy.boilerplate.controller;
 
+import com.elecbrandy.boilerplate.controller.docs.AuthApi;
 import com.elecbrandy.boilerplate.domain.dto.LoginRequest;
 import com.elecbrandy.boilerplate.domain.dto.RegisterRequest;
 import com.elecbrandy.boilerplate.domain.dto.RegisterResponse;
@@ -8,8 +9,8 @@ import com.elecbrandy.boilerplate.global.constants.AppConstants;
 import com.elecbrandy.boilerplate.global.jwt.JwtTokenProvider;
 import com.elecbrandy.boilerplate.global.response.CommonResponse;
 import com.elecbrandy.boilerplate.service.UserService;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,10 +23,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.Arrays;
 
@@ -40,7 +37,7 @@ import java.util.Arrays;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-public class AuthController {
+public class AuthController implements AuthApi {
 
     private final UserService userService;
     private final JwtTokenProvider jwtTokenProvider;
@@ -54,47 +51,10 @@ public class AuthController {
      * @param request 이메일, 비밀번호, 닉네임 정보를 포함한 회원가입 요청 데이터
      * @return 생성된 사용자의 정보를 포함한 응답 객체
      */
-    @Operation(
-            summary = "회원가입",
-            description = "이메일, 비밀번호, 닉네임을 입력받아 신규 사용자를 등록합니다."
-    )
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "회원가입 성공",
-                    content = @Content(schema = @Schema(implementation = RegisterResponse.class))
-            ),
-            @ApiResponse(responseCode = "400", description = "입력값 유효성 검증 실패 (비밀번호 형식 등)"),
-            @ApiResponse(responseCode = "409", description = "이미 존재하는 이메일 또는 닉네임")
-    })
     @PostMapping("/register")
     public CommonResponse<RegisterResponse> signup(@Valid @RequestBody RegisterRequest request) {
         RegisterResponse userResponse = userService.register(request);
         return CommonResponse.success("회원가입 성공", userResponse);
-    }
-
-    /**
-     * 사용자의 로그인 요청을 처리합니다.
-     * <p>
-     * 로그인 성공 시, 생성된 Access Token과 Refresh Token을
-     * 클라이언트의 HttpOnly 쿠키에 저장합니다.
-     * </p>
-     *
-     * @param request  로그인을 위한 이메일, 비밀번호 데이터
-     * @param response 쿠키를 설정하기 위한 HTTP 응답 객체
-     * @return 로그인 성공 메시지를 담은 응답 객체
-     */
-    @Operation(summary = "로그인", description = "이메일, 비밀번호로 로그인합니다. 성공 시 Access/Refresh Token이 쿠키로 설정됩니다.")
-    @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "로그인 성공"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "비밀번호 불일치"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "계정 없음"),
-    })
-    @PostMapping("/login")
-    public CommonResponse<String> login(@Valid @RequestBody LoginRequest request, HttpServletResponse response) {
-        TokenInfo tokenInfo = userService.login(request);
-        setTokenCookies(response, tokenInfo);
-        return CommonResponse.ok("로그인 성공");
     }
 
     /**
@@ -110,9 +70,6 @@ public class AuthController {
      * @return 로그아웃 성공 메시지를 담은 응답 객체
      */
     @Operation(summary = "로그아웃", description = "Refresh Token 쿠키를 무효화하고 서버 세션을 삭제합니다.")
-    @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "로그아웃 성공")
-    })
     @PostMapping("/logout")
     public CommonResponse<Void> logout(HttpServletRequest request, HttpServletResponse response) {
         String refreshToken = resolveToken(request, AppConstants.REFRESH_TOKEN);
@@ -129,6 +86,25 @@ public class AuthController {
     }
 
     /**
+     * 사용자의 로그인 요청을 처리합니다.
+     * <p>
+     * 로그인 성공 시, 생성된 Access Token과 Refresh Token을
+     * 클라이언트의 HttpOnly 쿠키에 저장합니다.
+     * </p>
+     *
+     * @param request  로그인을 위한 이메일, 비밀번호 데이터
+     * @param response 쿠키를 설정하기 위한 HTTP 응답 객체
+     * @return 로그인 성공 메시지를 담은 응답 객체
+     */
+    @Operation(summary = "로그인", description = "사용자의 아이디와 비밀번호를 이용하여 인증을 진행하고, Access Token과 Refresh Token을 발급합니다.")
+    @PostMapping("/login")
+    public CommonResponse<String> login(@Valid @RequestBody LoginRequest request, HttpServletResponse response) {
+        TokenInfo tokenInfo = userService.login(request);
+        setTokenCookies(response, tokenInfo);
+        return CommonResponse.ok("로그인 성공");
+    }
+
+    /**
      * 만료된 Access Token을 갱신하기 위한 토큰 재발급 요청을 처리합니다.
      * <p>
      * - 쿠키에 저장된 Refresh Token을 검증하여 유효한 경우 새로운 토큰 셋을 발급하고 쿠키를 갱신합니다.<br>
@@ -140,10 +116,6 @@ public class AuthController {
      * @return 재발급 성공 메시지를 담은 응답 객체
      */
     @Operation(summary = "토큰 재발급", description = "Refresh Token 쿠키를 이용해 Access/Refresh Token을 재발급합니다.")
-    @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "재발급 성공"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "토큰 만료 또는 유효하지 않은 토큰")
-    })
     @PostMapping("/reissue")
     public CommonResponse<Void> reissue(HttpServletRequest request, HttpServletResponse response) {
         String refreshToken = resolveToken(request, AppConstants.REFRESH_TOKEN);

@@ -144,7 +144,7 @@ public class UserService {
         }
 
         // 2. 토큰 타입 검증 (REFRESH 타입인지 확인)
-        String tokenType = (String) claims.get(AppConstants.TOKEN_TYPE_KEY);
+        String tokenType = claims.get(AppConstants.TOKEN_TYPE_KEY, String.class);
         if (!AppConstants.REFRESH_TOKEN_TYPE.equals(tokenType)) {
             throw new BusinessException(ErrorCode.AUTH_INVALID_TOKEN);
         }
@@ -161,6 +161,9 @@ public class UserService {
             }
             log.warn("RTR 공격 의심(활성 세션 존재하나 만료된 토큰 사용): {}", email);
             refreshTokenService.deleteAllByKey(email);
+
+            // 탈취 의심 시 예외를 던져 로직을 즉각 차단
+            throw new BusinessException(ErrorCode.AUTH_INVALID_TOKEN);
         }
 
         // 4. 정상 재발급

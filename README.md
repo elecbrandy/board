@@ -22,5 +22,8 @@ Spring-boot 기반 프로젝트 시 초기 설정을 빠르게 하기 위한 목
 | `make  re`     | 싹 지우고 다시 실행 | |
 
 ## Documentation
+- **Server**
+  - http://localhost:8080
 - **Swagger**: 외부 API 명세용 (Controller, DTO에 적용)
+  - http://localhost:8080/swagger-ui/index.html
 - **JavaDoc**: 내부 로직 설명용 (Service, Repository에 적용)

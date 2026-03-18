@@ -10,6 +10,9 @@ CYAN 	= \033[0;36m
 GREEN 	= \033[0;32m
 RESET 	= \033[0m
 
+include .env
+export
+
 .PHONY: all up down run stop build test clean fclean re logs psql help
 
 # 기본 명령어 (make 입력 시 실행) -> DB 켜고 앱 실행
@@ -26,7 +29,7 @@ down: ## Docker Compose 종료
 
 run: ## Spring Boot 애플리케이션 실행 (bootRun)
 	@echo "$(GREEN)>>> Running Spring Boot Application...$(RESET)"
-	$(GRADLE) bootRun
+	set -a && . ./.env && set +a && $(GRADLE) bootRun
 
 stop: ## 실행 중인 Spring Boot 애플리케이션 정지 (Gradle --stop)
 	@echo "$(CYAN)>>> Stopping Spring Boot Application...$(RESET)"
