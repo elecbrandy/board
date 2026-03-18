@@ -1,4 +1,4 @@
-package com.elecbrandy.boilerplate.domain.entity;
+package com.elecbrandy.boilerplate.auth.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

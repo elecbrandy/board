@@ -1,4 +1,4 @@
-package com.elecbrandy.boilerplate.domain.dto;
+package com.elecbrandy.boilerplate.auth.domain.dto;
 
 
 import jakarta.persistence.Table;
@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Builder
-@Table(name = "refresh_token")
+//@Table(name = "refresh_token")
 @Getter
 @AllArgsConstructor
 public class TokenInfo {

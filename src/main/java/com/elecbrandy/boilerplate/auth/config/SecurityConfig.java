@@ -1,15 +1,16 @@
-package com.elecbrandy.boilerplate.global.config;
+package com.elecbrandy.boilerplate.auth.config;
 
-import com.elecbrandy.boilerplate.global.jwt.JwtAccessDeniedHandler;
-import com.elecbrandy.boilerplate.global.jwt.JwtAuthenticationEntryPoint;
-import com.elecbrandy.boilerplate.global.jwt.JwtAuthenticationFilter;
-import com.elecbrandy.boilerplate.global.jwt.JwtTokenProvider;
+import com.elecbrandy.boilerplate.auth.jwt.JwtAccessDeniedHandler;
+import com.elecbrandy.boilerplate.auth.jwt.JwtAuthenticationEntryPoint;
+import com.elecbrandy.boilerplate.auth.jwt.JwtAuthenticationFilter;
+import com.elecbrandy.boilerplate.auth.jwt.JwtTokenProvider;
 import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -20,7 +21,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 /**
@@ -82,7 +82,8 @@ public class SecurityConfig {
                         .accessDeniedHandler(jwtAccessDeniedHandler) // 403
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/auth/**", "/api/users/register").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",

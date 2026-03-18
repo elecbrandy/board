@@ -1,7 +1,6 @@
-package com.elecbrandy.boilerplate.service;
+package com.elecbrandy.boilerplate.auth.service;
 
-import com.elecbrandy.boilerplate.domain.entity.RefreshToken;
-import com.elecbrandy.boilerplate.repository.RefreshTokenRepository;
+import com.elecbrandy.boilerplate.auth.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;

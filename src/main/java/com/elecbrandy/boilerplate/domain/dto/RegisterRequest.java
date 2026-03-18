@@ -1,5 +1,8 @@
 package com.elecbrandy.boilerplate.domain.dto;
 
+import com.elecbrandy.boilerplate.auth.validator.EmailValid;
+import com.elecbrandy.boilerplate.auth.validator.PasswordValid;
+import com.elecbrandy.boilerplate.auth.validator.UsernameValid;
 import com.elecbrandy.boilerplate.domain.entity.User;
 import com.elecbrandy.boilerplate.domain.enums.Role;
 import com.elecbrandy.boilerplate.global.constants.AppConstants;
@@ -18,8 +21,7 @@ import lombok.Setter;
 public class RegisterRequest {
 
     @Schema(description = "이메일", example = "newuser@example.com", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotBlank
-    @Email
+    @EmailValid
     private String email;
 
     @Schema(
@@ -27,14 +29,11 @@ public class RegisterRequest {
             example = "Password1!",
             requiredMode = Schema.RequiredMode.REQUIRED
     )
-    @NotBlank
-    @Pattern(regexp = AppConstants.PASSWORD_REGEX,
-            message = "비밀번호는 8~20자이며 영문, 숫자, 특수문자를 포함해야 합니다.")
+    @PasswordValid
     private String password;
 
     @Schema(description = "닉네임 (2~50자)", example = "홍길동", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotBlank
-    @Size(min = 2, max = 50)
+    @UsernameValid
     private String username;
 
     // DTO -> Entity

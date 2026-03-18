@@ -1,10 +1,9 @@
 package com.elecbrandy.boilerplate.global.jwt;
 
-import com.elecbrandy.boilerplate.domain.dto.TokenInfo;
+import com.elecbrandy.boilerplate.auth.domain.dto.TokenInfo;
+import com.elecbrandy.boilerplate.auth.jwt.JwtTokenProvider;
 import com.elecbrandy.boilerplate.global.constants.AppConstants;
 import com.elecbrandy.boilerplate.global.exception.BusinessException;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package com.elecbrandy.boilerplate.global.jwt;
+package com.elecbrandy.boilerplate.auth.jwt;
 
 import com.elecbrandy.boilerplate.global.response.CommonResponse;
 import com.elecbrandy.boilerplate.global.response.ErrorCode;

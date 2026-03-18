@@ -1,6 +1,7 @@
 package com.elecbrandy.boilerplate.repository;
 
-import com.elecbrandy.boilerplate.domain.entity.RefreshToken;
+import com.elecbrandy.boilerplate.auth.domain.entity.RefreshToken;
+import com.elecbrandy.boilerplate.auth.repository.RefreshTokenRepository;
 import com.elecbrandy.boilerplate.domain.entity.User;
 import com.elecbrandy.boilerplate.domain.enums.Role;
 import com.elecbrandy.boilerplate.support.RepositoryTestSupport;

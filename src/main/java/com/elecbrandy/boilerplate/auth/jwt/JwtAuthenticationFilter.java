@@ -1,4 +1,4 @@
-package com.elecbrandy.boilerplate.global.jwt;
+package com.elecbrandy.boilerplate.auth.jwt;
 
 import com.elecbrandy.boilerplate.global.constants.AppConstants;
 import com.elecbrandy.boilerplate.global.exception.BusinessException;

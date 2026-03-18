@@ -1,6 +1,6 @@
-package com.elecbrandy.boilerplate.controller.docs;
+package com.elecbrandy.boilerplate.auth.controller.docs;
 
-import com.elecbrandy.boilerplate.domain.dto.LoginRequest;
+import com.elecbrandy.boilerplate.auth.domain.dto.LoginRequest;
 import com.elecbrandy.boilerplate.domain.dto.RegisterRequest;
 import com.elecbrandy.boilerplate.domain.dto.RegisterResponse;
 import com.elecbrandy.boilerplate.global.annotation.ApiCommonErrorResponse;

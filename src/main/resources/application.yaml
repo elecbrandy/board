@@ -45,7 +45,7 @@ jwt:
   secret: ${JWT_SECRET}
   access-token-expiration: ${JWT_ACCESS_EXP:1800000}
   refresh-token-expiration: ${JWT_REFRESH_EXP:86400000}
-  cookie-secure: false # 운영 시 ture
+  cookie-secure: ${COOKIE_SECURE}
 
 app:
   cors:

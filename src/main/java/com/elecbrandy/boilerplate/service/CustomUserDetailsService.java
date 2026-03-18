@@ -1,7 +1,6 @@
 package com.elecbrandy.boilerplate.service;
 
 import com.elecbrandy.boilerplate.domain.entity.User;
-import com.elecbrandy.boilerplate.global.constants.AppConstants;
 import com.elecbrandy.boilerplate.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

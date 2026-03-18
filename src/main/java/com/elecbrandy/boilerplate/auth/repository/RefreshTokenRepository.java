@@ -1,6 +1,6 @@
-package com.elecbrandy.boilerplate.repository;
+package com.elecbrandy.boilerplate.auth.repository;
 
-import com.elecbrandy.boilerplate.domain.entity.RefreshToken;
+import com.elecbrandy.boilerplate.auth.domain.entity.RefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
@@ -38,6 +38,7 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long
      * 특정 사용자의 모든 Refresh Token을 일괄 삭제합니다.
      * (주로 RTR 재사용 공격이 의심될 때, 해당 사용자의 모든 세션을 강제 종료하기 위해 호출됩니다.)
      */
+    @Modifying
     void deleteAllByKey(String key);
 
     List<RefreshToken> findAllByKeyOrderByIdAsc(String key);
