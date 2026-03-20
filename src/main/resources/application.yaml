@@ -29,6 +29,25 @@ spring:
     init:
       mode: never
 
+  # ── Google OAuth2 설정 ──────────────────────────────────────────────────────
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            # 요청할 권한 범위: 이메일과 프로필 정보
+            scope:
+              - email
+              - profile
+            # Spring Security 기본 콜백 URI (Google Console에 등록 필수)
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+        provider:
+          google:
+            # Google의 OIDC Discovery 엔드포인트 (자동으로 authorization/token/userInfo URI 설정)
+            issuer-uri: https://accounts.google.com
+
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
@@ -50,3 +69,6 @@ jwt:
 app:
   cors:
     allowed-origins: ${APP_CORS_ORIGINS:http://localhost:3000,http://localhost:8080}
+  oauth2:
+    # OAuth2 인증 성공/실패 후 리다이렉트될 프론트엔드 URI
+    redirect-uri: ${OAUTH2_REDIRECT_URI:http://localhost:3000/oauth2/callback}

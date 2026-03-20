@@ -6,6 +6,10 @@ import com.elecbrandy.boilerplate.auth.jwt.JwtAuthenticationFilter;
 import com.elecbrandy.boilerplate.auth.jwt.JwtTokenProvider;
 import java.util.Arrays;
 import java.util.List;
+
+import com.elecbrandy.boilerplate.auth.oauth2.handler.OAuth2AuthenticationFailureHandler;
+import com.elecbrandy.boilerplate.auth.oauth2.handler.OAuth2AuthenticationSuccessHandler;
+import com.elecbrandy.boilerplate.auth.oauth2.service.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -43,9 +47,15 @@ public class SecurityConfig {
     @Value("#{'${app.cors.allowed-origins}'.split(',')}")
     private List<String> allowedOrigins;
 
+    // JWT
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+
+    // OAuth
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+    private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
 
     /**
      * 인증(Authentication)을 처리하는 중심 인터페이스인 {@link AuthenticationManager} 빈을 등록합니다.
@@ -83,6 +93,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**", "/api/users/register").permitAll()
+                        .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(
                                 "/swagger-ui/**",
@@ -91,7 +102,16 @@ public class SecurityConfig {
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(
+                        new JwtAuthenticationFilter(jwtTokenProvider),
+                        UsernamePasswordAuthenticationFilter.class)
+                .oauth2Login(oauth2 -> oauth2
+                        // Spring Security 기본 콜백 URI: /login/oauth2/code/{registrationId}
+                        .userInfoEndpoint(userInfo ->
+                                userInfo.userService(customOAuth2UserService))
+                        .successHandler(oAuth2AuthenticationSuccessHandler)
+                        .failureHandler(oAuth2AuthenticationFailureHandler)
+                );
         return http.build();
     }
 

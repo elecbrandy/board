@@ -5,11 +5,9 @@ import com.elecbrandy.boilerplate.auth.validator.PasswordValid;
 import com.elecbrandy.boilerplate.auth.validator.UsernameValid;
 import com.elecbrandy.boilerplate.domain.entity.User;
 import com.elecbrandy.boilerplate.domain.enums.Role;
-import com.elecbrandy.boilerplate.global.constants.AppConstants;
+import com.elecbrandy.boilerplate.auth.oauth2.domain.OAuthProvider;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -43,6 +41,7 @@ public class RegisterRequest {
                 .password(encodedPassword)
                 .username(username)
                 .role(Role.USER)
+                .provider(OAuthProvider.LOCAL)
                 .build();
     }
 }

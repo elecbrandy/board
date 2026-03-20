@@ -103,7 +103,7 @@ public class JwtTokenProvider {
 
     public boolean isRefreshToken(String token) {
         try {
-            Claims claims = parseClaims(token); // 만료 여부 및 서명 확인
+            Claims claims = getClaimsIgnoringExpiration(token); // 만료 여부 및 서명 확인
             String tokenType = (String) claims.get(AppConstants.TOKEN_TYPE_KEY);
             return AppConstants.REFRESH_TOKEN_TYPE.equals(tokenType);
         } catch (Exception e) {
@@ -119,19 +119,19 @@ public class JwtTokenProvider {
         return Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload();
     }
 
+    // 만료 무시 파싱 - 클레임만 필요할 때 명시적으로 호출
     public Claims getClaimsIgnoringExpiration(String token) {
         try {
-            return Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload();
+            return Jwts.parser().verifyWith(key).build()
+                    .parseSignedClaims(token).getPayload();
         } catch (ExpiredJwtException e) {
-            return e.getClaims();
+            return e.getClaims(); // 만료돼도 클레임 반환 — 의도적
         }
     }
 
-    private Claims parseClaims(String accessToken) {
-        try {
-            return Jwts.parser().verifyWith(key).build().parseSignedClaims(accessToken).getPayload();
-        } catch (ExpiredJwtException e) {
-            return e.getClaims();
-        }
+    // 엄격한 파싱 - 만료 시 예외 전파
+    private Claims parseClaims(String token) {
+        return Jwts.parser().verifyWith(key).build()
+                .parseSignedClaims(token).getPayload();
     }
 }
